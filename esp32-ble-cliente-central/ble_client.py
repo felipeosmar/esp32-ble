@@ -18,7 +18,11 @@ class BLESensorClient:
     def __init__(self, target_mac=None, device_name=None, config=None):
         self.target_mac = target_mac
         self.device_name = device_name
-        self.config = {**DEFAULT_CONFIG, **(config or {})}
+        
+        # Correção: Sintaxe compatível com MicroPython v1.25.0
+        self.config = DEFAULT_CONFIG.copy()
+        if config:
+            self.config.update(config)
         
         # Componentes modulares
         self.memory_manager = MemoryManager(self.config)
@@ -174,6 +178,10 @@ class BLESensorClient:
         """Status detalhado"""
         memory_info = self.memory_manager.check_memory_health()
         
+        # Correção: Evita unpacking de dict para compatibilidade
+        stats_copy = self.stats.copy()
+        stats_copy['gc_collections'] = memory_info['gc_count']
+        
         return {
             'state': self.state_machine.get_state_name(),
             'connected': self.conn_handle is not None,
@@ -183,7 +191,7 @@ class BLESensorClient:
             'memory_free': memory_info['free'],
             'min_memory': memory_info['min_recorded'],
             'retry_count': self.retry_count,
-            'stats': {**self.stats, 'gc_collections': memory_info['gc_count']}
+            'stats': stats_copy
         }
     
     def disconnect(self):

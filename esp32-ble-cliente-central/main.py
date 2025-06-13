@@ -137,4 +137,4 @@ def exemplo_conexao_rapida():
 
 if __name__ == "__main__":
     main()
-    # exemplo_conexao_rapida()  # Descomente para testar
+    exemplo_conexao_rapida()  # Descomente para testar
